@@ -18,5 +18,10 @@
         {
             Console.WriteLine($"Nome: {Nome}\tEmail: {Email}");
         }
+
+        public virtual void CriarTarefa(string email, string objetivo, string descricao)
+        {
+            Console.WriteLine("Usuário não especificado não pode criar tarefa.");
+        }
     }
 }
