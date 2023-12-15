@@ -1,68 +1,140 @@
-﻿using ClassLibrary.Tarefas;
-using ClassLibrary.Usuarios;
+﻿using Services;
 
 namespace GerenciadorDeTarefas
 {
     internal class Program
     {
-        BancoDeDados banco = new BancoDeDados();
+        GerenciadorService gerenciador = new GerenciadorService();
 
         private void CadastrarDesenvolvedor()
         {
-            Console.WriteLine("\tCadastro do desenvolvedor");
-            Console.WriteLine("Nome:");
-            string nome = Console.ReadLine();
-            Console.WriteLine("Email:");
-            string email = Console.ReadLine();
-            Console.WriteLine("Senha:");
-            Senha senha = new Senha(Console.ReadLine());
-            banco.CadastrarDesenvolvedor(nome, email, senha);
+            try
+            {
+                Console.WriteLine("\tCadastro do desenvolvedor");
+                Console.WriteLine("Nome:");
+                string nome = Console.ReadLine();
+                Console.WriteLine("Email:");
+                string email = Console.ReadLine();
+                Console.WriteLine("Senha:");
+                string senha = Console.ReadLine();
+                gerenciador.CadastrarDesenvolvedor(nome, email, senha);
+            } catch (Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro ao tentar cadastrar desenvolvedor: {ex}");
+            }
         }
 
         private void CadastrarTechLeader()
         {
-            Console.WriteLine("\tCadastro do Tech Leader");
-            Console.WriteLine("Nome:");
-            string nome = Console.ReadLine();
-            Console.WriteLine("Email:");
-            string email = Console.ReadLine();
-            Console.WriteLine("Senha:");
-            Senha senha = new Senha(Console.ReadLine());
-            banco.CadastrarTechLeader(nome, email, senha);
+            try
+            {
+                Console.WriteLine("\tCadastro do Tech Leader");
+                Console.WriteLine("Nome:");
+                string nome = Console.ReadLine();
+                Console.WriteLine("Email:");
+                string email = Console.ReadLine();
+                Console.WriteLine("Senha:");
+                string senha = Console.ReadLine();
+                gerenciador.CadastrarTechLeader(nome, email, senha);
+            } catch (Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro ao tentar cadastrar Tech Leader: {ex}");
+            }
         }
 
         private void Login()
         {
-            Console.WriteLine("\tLOGIN");
-            Console.WriteLine("Email usuário:");
-            string email = Console.ReadLine();
-            Console.WriteLine("Senha: ");
-            string senha = Console.ReadLine();
-            banco.AutenticarUsuario(email, senha);
+            try
+            {
+                Console.WriteLine("\tLOGIN");
+                Console.WriteLine("Email usuário:");
+                string email = Console.ReadLine();
+                Console.WriteLine("Senha: ");
+                string senha = Console.ReadLine();
+                gerenciador.AutenticarUsuario(email, senha);
+            } catch (Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro ao tentar fazer login de usuário: {ex}");
+            }
         }
 
         private void Logout()
         {
-            Console.WriteLine("\tLOGOUT");
-            banco.Logout();
+            try
+            {
+                Console.WriteLine("\tLOGOUT");
+                gerenciador.Logout();
+            } catch(Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro ao tentar fazer logout de usuário: {ex}");
+            }
+        }
+
+        private void CriarTarefa()
+        {
+            try
+            {
+                Console.WriteLine("\tCriar tarefa");
+                gerenciador.CriarTarefa();
+            } catch(Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro ao tentar criar uma tarefa: {ex}");
+            }
+        }
+
+        private void RealizarOpcao(int opcao)
+        {
+            Program program = new Program();
+            switch (opcao)
+            {
+                case 1:
+                    program.CadastrarDesenvolvedor();
+                    break;
+                case 2:
+                    program.CadastrarTechLeader();
+                    break;
+                case 3:
+                    program.Login();
+                    break;
+                case 4:
+                    break;
+                    // criar tarefa
+                    // alterar estado da tarefa
+                    // listar tarefas
+
+                case 8: 
+                    program.Logout();
+                    break;
+            }
         }
 
         public static void Main(string[] args)
         {
-            Program programa = new Program(); // Criando uma instância de Program
-            Desenvolvedor dev = new Desenvolvedor("duda", "duda@gmail.com", new Senha("dudadevsenior2024"));
-            TechLeader dev2 = new TechLeader("maria", "maria@gmail.com", new Senha("dudatechleader2024"));
-            //programa.CadastrarDesenvolvedor();
-            programa.CadastrarDesenvolvedor();
-            programa.CadastrarTechLeader();
+            try
+            {
+                GerenciadorService gerenciador = new GerenciadorService();
+                Program program = new Program();
+                int opcao;
 
-            programa.Login();
-            programa.banco.ListarTarefas();
+                Console.WriteLine("\tGERENCIADOR DE TAREFAS");
+                do
+                {
+                    Console.WriteLine("Deseja fazer o cadastro de um desenvolvedor (1), de um Tech Leader (2), ou quer " +
+                        "fazer o login (3)?");
+                    Console.WriteLine("Obs.: Faça o login para ter acesso a outras partes do sistema.");
+                    opcao = int.Parse(Console.ReadLine());
+                } while ((opcao < 0 || opcao > 3) && !gerenciador.UsuarioEstaLogado());
 
-            // colocar try catches
-            // implemetnar funcoes do banco
-            // separar classe banco de dados em talvez uma outra solution
-            // fazer um menu em program
+                do
+                {
+                    gerenciador.usuarioLogado;
+                } while (opcao < 4 || opcao > 10);
+                program.RealizarOpcao(opcao);
+
+            } catch(Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro no escopo geral: {ex}");
+            }
         }
     }
 }

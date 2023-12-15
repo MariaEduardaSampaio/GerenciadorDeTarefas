@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerenciadorDeTarefas", "GerenciadorDeTarefas\GerenciadorDeTarefas.csproj", "{25B3585B-0A54-47E0-BF22-3E9F5AE2345C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GerenciadorDeTarefas", "GerenciadorDeTarefas\GerenciadorDeTarefas.csproj", "{25B3585B-0A54-47E0-BF22-3E9F5AE2345C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary", "ClassLibrary\ClassLibrary.csproj", "{6E64BCDD-FAF9-4159-8661-4D7F503454A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassLibrary", "ClassLibrary\ClassLibrary.csproj", "{6E64BCDD-FAF9-4159-8661-4D7F503454A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{49D8ACCF-3A20-4185-9250-4322109A8626}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{6E64BCDD-FAF9-4159-8661-4D7F503454A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E64BCDD-FAF9-4159-8661-4D7F503454A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E64BCDD-FAF9-4159-8661-4D7F503454A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49D8ACCF-3A20-4185-9250-4322109A8626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49D8ACCF-3A20-4185-9250-4322109A8626}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49D8ACCF-3A20-4185-9250-4322109A8626}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49D8ACCF-3A20-4185-9250-4322109A8626}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
