@@ -8,7 +8,7 @@ namespace ClassLibrary.Usuarios
 {
     public class Senha
     {
-        private string senha { get; set; }
+        public string senha { get; set; }
 
         public Senha(string senha)
         {
