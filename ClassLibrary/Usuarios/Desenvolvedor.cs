@@ -9,7 +9,7 @@ namespace ClassLibrary.Usuarios
 {
     public class Desenvolvedor(string Nome, string Email, Senha senha) : Usuario(Nome, AcessoAoSistema.PARCIAL, Email, senha)
     {
-        public void criarTarefa()
+        public void CriarTarefa()
         {
             Console.WriteLine("Criar tarefa (pelo desenvolvedor):");
             Console.WriteLine("Entre com o objetivo da tarefa: ");
