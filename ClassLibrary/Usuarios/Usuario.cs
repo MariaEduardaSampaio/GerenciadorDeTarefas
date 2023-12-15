@@ -12,6 +12,11 @@
         public AcessoAoSistema TipoDeAcesso { get; private set; } = TipoDeAcesso;
 
         public string Email { get; private set; } = Email;
-        private Senha senha { get; set; } = senha;
+        public Senha senha { get; set; } = senha;
+
+        public void ListarInformacoes()
+        {
+            Console.WriteLine($"Nome: {Nome}\tEmail: {Email}");
+        }
     }
 }
