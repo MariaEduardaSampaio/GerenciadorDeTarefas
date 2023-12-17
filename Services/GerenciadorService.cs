@@ -87,8 +87,8 @@ namespace Services
             else if (usuarioLogado.TipoDeAcesso == AcessoAoSistema.PARCIAL)
             {
                 List<Tarefa> tarefasPorResponsavel = tarefas.Where(tarefa => tarefa.EmailDoResponsavel == usuarioLogado.Email).ToList();
-                List<Tarefa> tarefasPorObjetivo = new List<Tarefa>();
-                List<Tarefa> tarefasDisponiveis = new List<Tarefa>();
+                List<Tarefa> tarefasPorObjetivo = new();
+                List<Tarefa> tarefasDisponiveis = new();
 
                 foreach (var tarefaPorResponsavel in tarefasPorResponsavel)
                     tarefasPorObjetivo.AddRange(tarefas.Where(tarefa => tarefa.Objetivo == tarefaPorResponsavel.Objetivo));
@@ -209,5 +209,7 @@ namespace Services
             tarefas.Add(new Tarefa(email, objetivo, descricao));
             usuarioLogado.CriarTarefa(email, objetivo, descricao);
         }
+
+        public void EstatisticasTarefas() { }
     }
 }
