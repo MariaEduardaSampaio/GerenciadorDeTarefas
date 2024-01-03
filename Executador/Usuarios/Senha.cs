@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ClassLibrary.Usuarios
+﻿namespace Application.Usuarios
 {
     public class Senha
     {
@@ -17,7 +11,7 @@ namespace ClassLibrary.Usuarios
 
         private void ValidarSenha(string senha)
         {
-            if (String.IsNullOrEmpty(senha))
+            if (string.IsNullOrEmpty(senha))
                 throw new ArgumentNullException("Senha não pode ser nula.");
             else if (senha.Length < 8)
                 throw new ArgumentException("Senha deve ter ao menos 8 caracteres.");
@@ -25,7 +19,7 @@ namespace ClassLibrary.Usuarios
                 throw new ArgumentException("Senha deve conter ao menos um número.");
             else if (!senha.Any(letra => char.IsLetter(letra)))
                 throw new ArgumentException("Senha deve conter ao menos uma letra.");
-            this.senha = senha; 
+            this.senha = senha;
         }
     }
 }

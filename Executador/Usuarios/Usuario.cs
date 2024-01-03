@@ -1,4 +1,4 @@
-﻿namespace ClassLibrary.Usuarios
+﻿namespace Application.Usuarios
 {
     public enum AcessoAoSistema
     {

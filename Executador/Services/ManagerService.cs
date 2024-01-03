@@ -1,19 +1,22 @@
-﻿
-using ClassLibrary.Tarefas;
-using ClassLibrary.Usuarios;
+﻿using Application.Usuarios;
+using Domain.AggregateObjects;
+using Domain.Interfaces;
+using System.Threading.Tasks;
 
-namespace Services
+namespace Application.Services
 {
-    public class GerenciadorService
+    public class ManagerService
     {
+        private readonly ITaskManagerRepository _taskManagerRepository;
         public List<Usuario> Usuarios { get; private set; }
-        public List<Tarefa> Tarefas { get; private set; }
+        public List<Tasks> Tarefas { get; private set; }
         public Usuario UsuarioLogado { get; private set; } = null;
 
-        public GerenciadorService()
+        public ManagerService(ITaskManagerRepository taskManagerRepository)
         {
             Usuarios = new List<Usuario>();
-            Tarefas = new List<Tarefa>();
+            Tarefas = new List<Tasks>();
+            _taskManagerRepository = taskManagerRepository;
         }
 
         public bool EmailNaoExiste(string email)
@@ -82,14 +85,17 @@ namespace Services
             }
             else if (UsuarioLogado.TipoDeAcesso == AcessoAoSistema.PARCIAL)
             {
-                List<Tarefa> tarefasPorResponsavel = Tarefas.Where(tarefa => tarefa.EmailDoResponsavel == UsuarioLogado.Email).ToList();
-                List<Tarefa> tarefasPorObjetivo = new();
-                List<Tarefa> tarefasDisponiveis = new();
-
+                /*
+                List<Tasks> tarefasPorResponsavel = Tarefas.Where(tarefa => tarefa.EmailDoResponsavel == UsuarioLogado.Email).ToList();
                 foreach (var tarefaPorResponsavel in tarefasPorResponsavel)
-                    tarefasPorObjetivo.AddRange(Tarefas.Where(tarefa => tarefa.Objetivo == tarefaPorResponsavel.Objetivo));
-
+                    tarefasPorObjetivo.AddRange(Tarefas.Where(tarefa => tarefa.Objective == tarefaPorResponsavel.Objective));
                 tarefasDisponiveis.AddRange(tarefasPorResponsavel);
+                 
+                 */
+                List<Tasks> tarefasPorObjetivo = new();
+                List<Tasks> tarefasDisponiveis = new();
+
+
                 tarefasDisponiveis.AddRange(tarefasPorObjetivo);
                 tarefasDisponiveis = tarefasDisponiveis.Distinct().ToList();
 
@@ -100,7 +106,7 @@ namespace Services
 
         public bool UsuarioEstaLogado()
         {
-            if (UsuarioLogado == null) 
+            if (UsuarioLogado == null)
                 return false;
             return true;
         }
@@ -110,9 +116,9 @@ namespace Services
             return Enum.IsDefined(typeof(StatusTarefa), statusEscolhido);
         }
 
-        public Tarefa EscolherTarefa()
+        public Tasks EscolherTarefa()
         {
-            Tarefa tarefaEscolhida;
+            Tasks tarefaEscolhida;
             int id;
             ListarTarefas();
             do
@@ -125,7 +131,7 @@ namespace Services
             return tarefaEscolhida;
         }
 
-        public void AlterarEstadoTarefa(StatusTarefa statusTarefa, Tarefa tarefa)
+        public void AlterarEstadoTarefa(StatusTarefa statusTarefa, Tasks tarefa)
         {
             switch (statusTarefa)
             {
@@ -158,7 +164,7 @@ namespace Services
             }
         }
 
-        public void ReceberEstadoTarefa()  
+        public void ReceberEstadoTarefa()
         {
             if (UsuarioLogado == null)
                 throw new AccessViolationException("Usuário deve estar logado para poder alterar estado de uma tarefa.");
@@ -166,9 +172,9 @@ namespace Services
             if (UsuarioLogado.TipoDeAcesso == AcessoAoSistema.PARCIAL)
                 throw new AccessViolationException("Apenas o Tech Leader pode alterar estado da tarefa.");
 
-            Tarefa tarefaEscolhida = EscolherTarefa();
+            Tasks tarefaEscolhida = EscolherTarefa();
             int statusEscolhido;
-            Tarefa.ListarStatusTarefa();
+            Tasks.ListarStatusTarefa();
             do
             {
                 Console.WriteLine($"Entre com o novo status da tarefa {tarefaEscolhida.Id}");
@@ -178,7 +184,7 @@ namespace Services
             AlterarEstadoTarefa((StatusTarefa)statusEscolhido, tarefaEscolhida);
         }
 
-        public void CriarTarefa()
+        public int CriarTarefa()
         {
             string objetivo, descricao, email = "";
 
@@ -201,9 +207,22 @@ namespace Services
                     email = Console.ReadLine();
                 } while (EmailNaoExiste(email));
             }
+            var task = new Tasks(objetivo, descricao);
 
-            Tarefas.Add(new Tarefa(email, objetivo, descricao));
+            Tarefas.Add(task);
             UsuarioLogado.CriarTarefa(email, objetivo, descricao);
+
+            var taskModel = new TaskModel()
+            {
+                Description = task.Description,
+                EmailResponsable = task.EmailResponsable,
+                CreatedDate = task.CreatedDate,
+                EndDate = task.EndDate,
+                Objective = task.Objective,
+                Status = (int)task.Status
+            };
+            int id = _taskManagerRepository.CreateTask(taskModel);
+            return id;
         }
 
         public void EstatisticasTarefas() { }
