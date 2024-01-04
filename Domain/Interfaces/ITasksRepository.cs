@@ -2,7 +2,7 @@
 
 namespace Domain.Interfaces
 {
-    public interface ITaskManagerRepository
+    public interface ITasksRepository
     {
         int CreateTask(TaskModel taskModel);
         TaskModel GetTaskByID(int id);
