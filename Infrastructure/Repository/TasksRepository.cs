@@ -28,6 +28,11 @@ namespace Infrastructure.Repository
             SaveChanges();
         }
 
+        public List<TaskModel> GetAllTasks()
+        {
+            return _taskManagerContext.Tasks.ToList();
+        }
+
         public List<TaskModel> GetAllTasksByEmail(string email)
         {
             var tasks = _taskManagerContext.Tasks.Where(task => task.EmailResponsable == email).ToList();
@@ -40,7 +45,7 @@ namespace Infrastructure.Repository
             return tasks;
         }
 
-        public TaskModel GetTaskByID(int id)
+        public TaskModel? GetTaskByID(int id)
         {
             var task = _taskManagerContext.Tasks.FirstOrDefault(task => task.Id == id);
             return task;

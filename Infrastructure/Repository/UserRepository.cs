@@ -1,12 +1,8 @@
 ﻿using Domain.AggregateObjects;
 using Domain.Interfaces;
 using Infrastructure.Context;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Infrastructure.Repository
 {
@@ -40,6 +36,16 @@ namespace Infrastructure.Repository
         public List<UserModel> GetAllUsersByRole(int Role)
         {
             return _taskManagerContext.Users.Where(user => user.Role == Role).ToList();
+        }
+
+        public UserModel? GetUserByEmail(string email)
+        {
+            return _taskManagerContext.Users.FirstOrDefault(user => user.Email == email);
+        }
+
+        public UserModel? GetUserByEmailAndPassword(string email, string password)
+        {
+            return _taskManagerContext.Users.FirstOrDefault(user => user.Email == email && user.Password == password);
         }
 
         public UserModel? GetUserByID(int id)
