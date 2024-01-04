@@ -6,7 +6,6 @@ namespace Infrastructure.Context
 {
     public class TaskManagerContext : DbContext
     {
-        // public TaskManagerContext(DbContextOptions<TaskManagerContext> options): base(options) { }
         public DbSet<TaskModel> Tasks { get; set;}
         public DbSet<UserModel> Users { get; set;}
 
