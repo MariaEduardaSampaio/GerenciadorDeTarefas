@@ -110,7 +110,7 @@ namespace Application.Services
                 Objective = task.Objective,
                 Description = task.Description,
                 CreatedDate = DateTime.Now,
-                Status = (int)TaskStatusEnum.UnderAnalysis,
+                Status = TaskStatusEnum.UnderAnalysis,
                 EndDate = task.EndDate
             }).ToList();
         }
@@ -124,6 +124,16 @@ namespace Application.Services
         public GetUserResponse? GetUserByID(int id)
         {
             var user = _userRepository.GetUserByID(id);
+            return MapUserToRequest(user);
+        }
+        public GetUserResponse? GetUserByEmail(string email)
+        {
+            var user = _userRepository.GetUserByEmail(email);
+            return MapUserToRequest(user);
+        }
+        public GetUserResponse? GetUserByEmailAndPassword(string email, string password)
+        {
+            var user = _userRepository.GetUserByEmailAndPassword(email, password);
             return MapUserToRequest(user);
         }
 
@@ -154,5 +164,6 @@ namespace Application.Services
                 userModel.AccessType = ConfigureAccessType((Role)userModel.Role);
             }
         }
+
     }
 }

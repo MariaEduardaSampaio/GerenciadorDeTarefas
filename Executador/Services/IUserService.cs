@@ -1,8 +1,4 @@
 ﻿using Application.Requests;
-using Application.Requests.Enums;
-using Application.Requests.ValueObjects;
-using Domain.AggregateObjects;
-using Domain.Interfaces;
 
 namespace Application.Services
 {
@@ -17,6 +13,10 @@ namespace Application.Services
         List<GetUserResponse> GetAllUsersByRole(int Role);
 
         GetUserResponse? GetUserByID(int id);
+
+        GetUserResponse? GetUserByEmail(string email);
+
+        GetUserResponse? GetUserByEmailAndPassword(string email, string password);
 
         void UpdateUser(UpdateUserRequest updateUserRequest);
     }
