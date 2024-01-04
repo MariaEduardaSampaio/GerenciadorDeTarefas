@@ -13,6 +13,9 @@ namespace Domain.Interfaces
         List<UserModel> GetAllUsers();
         List<UserModel> GetAllUsersByRole(int Role);
         UserModel? GetUserByID(int id);
+
+        UserModel? GetUserByEmail(string email);
+        UserModel? GetUserByEmailAndPassword(string email, string password);
         void UpdateUser(UserModel userModel);
         void DeleteUser(UserModel userModel);
     }
