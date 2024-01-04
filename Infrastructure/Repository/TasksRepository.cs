@@ -6,11 +6,11 @@ using System.Security.AccessControl;
 
 namespace Infrastructure.Repository
 {
-    internal class TaskManagerRepository : ITaskManagerRepository
+    public class TasksRepository : ITasksRepository
     {
         protected readonly TaskManagerContext _taskManagerContext;
 
-        public TaskManagerRepository(TaskManagerContext taskManagerContext)
+        public TasksRepository(TaskManagerContext taskManagerContext)
         {
             _taskManagerContext = taskManagerContext;
         }
@@ -18,13 +18,14 @@ namespace Infrastructure.Repository
         public int CreateTask(TaskModel taskModel)
         {
             _taskManagerContext.Tasks.Add(taskModel);
-            _taskManagerContext.SaveChanges();
+            SaveChanges();
             return taskModel.Id;
         }
 
         public void DeleteTask(TaskModel taskModel)
         {
             _taskManagerContext.Tasks.Remove(taskModel);
+            SaveChanges();
         }
 
         public List<TaskModel> GetAllTasksByEmail(string email)
@@ -48,6 +49,12 @@ namespace Infrastructure.Repository
         public void UpdateTask(TaskModel taskModel)
         {
             _taskManagerContext.Tasks.Update(taskModel);
+            SaveChanges();
+        }
+
+        private void SaveChanges()
+        {
+            _taskManagerContext.SaveChanges();
         }
     }
 }
