@@ -182,7 +182,7 @@ namespace Application
                         break;
 
                     case 5:
-                        MudarStatusTarefa();
+                        MudarStatusDeTarefa();
                         break;
 
                     case 6:
@@ -190,6 +190,9 @@ namespace Application
                         break;
 
                     case 7:
+                        MudarPrazoFinalDeTarefa();
+                        break;
+                    case 8:
                         FazerLogout();
                         break;
 
@@ -209,7 +212,8 @@ namespace Application
             Console.WriteLine("4. Assumir uma tarefa.");
             Console.WriteLine("5. Mudar status de tarefas.");
             Console.WriteLine("6. Mudar responsável de tarefa.");
-            Console.WriteLine("7. Fazer logout.\n");
+            Console.WriteLine("7. Mudar prazo final de tarefa.");
+            Console.WriteLine("8. Fazer logout.\n");
         }
 
         private static void VerTarefasDoSistema()
@@ -238,24 +242,39 @@ namespace Application
 
         private static void CriarTarefaPorTechLeader()
         {
-            DateTime prazoFinal;
-            string email, objetivo, descricao;
+            try
+            {
+                DateTime prazoFinal;
+                string email, objetivo, descricao;
 
-            Console.WriteLine("\t*Criar Tarefa *");
+                Console.WriteLine("\t*Criar Tarefa *");
 
-            Console.Write("Email do responsável: ");
-            email = PegarEmailValido();
+                Console.Write("Email do responsável: ");
+                email = PegarEmailValido();
 
-            Console.Write("Prazo final: ");
-            prazoFinal = PegarDataValida();
+                Console.Write("Prazo final: ");
+                prazoFinal = PegarDataValida();
 
-            Console.Write("Objetivo: ");
-            objetivo = Console.ReadLine()!;
+                Console.Write("Objetivo: ");
+                objetivo = Console.ReadLine()!;
 
-            Console.Write("Descrição: ");
-            descricao = Console.ReadLine()!;
+                Console.Write("Descrição: ");
+                descricao = Console.ReadLine()!;
 
-            _taskService.CreateTask(new TaskRequest());
+                var task = new TaskRequest()
+                {
+                    EmailResponsable = email,
+                    EndDate = prazoFinal,
+                    Objective = objetivo,
+                    Description = descricao
+                };
+
+                _taskService.CreateTask(task);
+
+            } catch(Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro ao criar uma tarefa: {ex}");
+            }
         }
 
         private static void AssumirTarefa()
@@ -285,7 +304,7 @@ namespace Application
             }
         }
 
-        private static void MudarStatusTarefa()
+        private static void MudarStatusDeTarefa()
         {
             try
             {
@@ -347,11 +366,133 @@ namespace Application
             }
         }
 
-        private static void MenuDeveloper()
+        private static void MudarPrazoFinalDeTarefa()
         {
+            try
+            {
+                Console.WriteLine("\t* Atualizar prazo final de Tarefa *");
+                VerTarefasDoSistema();
 
+                Console.WriteLine("Qual o ID da tarefa que deseja atualizar o prazo final?");
+                GetTaskResponse task = PegarTaskValida();
+
+                Console.WriteLine("Qual o novo prazo?");
+                DateTime prazoFinal = PegarDataValida();
+
+                var updateTaskRequest = new UpdateTaskRequest()
+                {
+                    EmailResponsable = task.EmailResponsable,
+                    Status = task.Status,
+                    EndDate = prazoFinal,
+                    Objective = task.Objective,
+                    Description = task.Description,
+                };
+
+                _taskService.UpdateTask(updateTaskRequest);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro ao mudar o prazo final de tarefa: {ex}");
+            }
         }
 
+        private static void MenuDeveloper()
+        {
+            int opcao;
+
+            do
+            {
+                Console.Clear();
+                Console.WriteLine($"\t*** Menu Desenvolvedor ***");
+                Console.WriteLine($"Bem vindo, {usuarioLogado.Name}!");
+                ListarOpcoesDeveloper();
+                opcao = PegarInteiroValido();
+
+                switch (opcao)
+                {
+                    case 1:
+                        CriarTarefaPorDeveloper();
+                        break;
+
+                    case 2:
+                        VerTarefasPorResponsavel();
+                        break;
+
+                    case 3:
+                        VerTarefasPorResponsavelEPorObjetivo();
+                        break;
+
+                    case 4:
+                        FazerLogout();
+                        break;
+
+                    default:
+                        ListarOpcoesDeveloper();
+                        break;
+                }
+
+            } while (opcao != 4);
+        }
+
+        private static void ListarOpcoesDeveloper()
+        {
+            Console.WriteLine("\n1. Criar tarefa.");
+            Console.WriteLine("2. Ver suas tarefas.");
+            Console.WriteLine("3. Ver suas tarefas e tarefas relacionadas.");
+            Console.WriteLine("4. Fazer Logout.");
+        }
+
+        private static void CriarTarefaPorDeveloper()
+        {
+            try
+            {
+                string objetivo, descricao;
+
+                Console.WriteLine("\t*Criar Tarefa *");
+
+                Console.Write("Objetivo: ");
+                objetivo = Console.ReadLine()!;
+
+                Console.Write("Descrição: ");
+                descricao = Console.ReadLine()!;
+
+                var task = new TaskRequest()
+                {
+                    EmailResponsable = usuarioLogado.Email,
+                    Objective = objetivo,
+                    Description = descricao
+                };
+
+                _taskService.CreateTask(task);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ocorreu um erro ao criar uma tarefa: {ex}");
+            }
+        }
+
+        private static void VerTarefasPorResponsavel()
+        {
+            Console.WriteLine("\t*Tarefas do usuário *");
+            List<GetTaskResponse> tasks = _taskService.GetAllTasksByEmail(usuarioLogado.Email);
+            tasks.ForEach(task => ImprimirTarefa(task));
+        }
+
+        private static void VerTarefasPorResponsavelEPorObjetivo()
+        {
+            Console.WriteLine("\t*Tarefas do usuário *");
+            List<GetTaskResponse> tarefasDoUsuario = _taskService.GetAllTasksByEmail(usuarioLogado.Email);
+            List<GetTaskResponse> tarefasRelacionadas = new();
+
+            foreach(var tarefa in tarefasDoUsuario)
+            {
+                tarefasRelacionadas.AddRange(_taskService.GetAllTasksByObjective(tarefa.Objective));
+            }
+
+            tarefasDoUsuario.AddRange(tarefasRelacionadas);
+            List<GetTaskResponse> tarefasPorResponsavelEObjetivo = tarefasDoUsuario.Distinct().ToList();
+            tarefasPorResponsavelEObjetivo.ForEach(ImprimirTarefa);
+        }
 
         private static void ImprimirPossiveisStatusTarefa()
         {
