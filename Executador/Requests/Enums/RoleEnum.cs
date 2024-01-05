@@ -2,7 +2,7 @@
 {
     public enum Role
     {
-        Developer = 1,
-        TechLeader = 2
+        TechLeader = 1,
+        Developer = 2
     }
 }
