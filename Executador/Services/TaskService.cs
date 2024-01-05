@@ -8,15 +8,18 @@ namespace Application.Services
     internal class TaskService : ITaskService
     {
         private readonly ITasksRepository _tasksRepository;
+        private readonly IUserRepository _userRepository;
 
-        public TaskService(ITasksRepository taskRepository)
+        public TaskService(ITasksRepository taskRepository, IUserRepository userRepository)
         {
             _tasksRepository = taskRepository;
+            _userRepository = userRepository;
         }
 
 
         public int CreateTask(TaskRequest taskRequest)
         {
+            var user = _userRepository.GetUserByEmail(taskRequest.EmailResponsable);
             var task = new TaskModel()
             {
                 EmailResponsable = taskRequest.EmailResponsable,
@@ -24,7 +27,8 @@ namespace Application.Services
                 Objective = taskRequest.Objective,
                 Description = taskRequest.Description,
                 CreatedDate = DateTime.Now,
-                Status = (int)TaskStatusEnum.UnderAnalysis
+                Status = (int)TaskStatusEnum.UnderAnalysis,
+                UserID = user.Id
             };
 
             _tasksRepository.CreateTask(task);

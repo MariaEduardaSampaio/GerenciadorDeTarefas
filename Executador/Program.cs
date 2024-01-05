@@ -20,7 +20,7 @@ namespace Application
             var taskRepository = new TasksRepository(dbContext);
 
             _userService = new UserService(userRepository);
-            _taskService = new TaskService(taskRepository);
+            _taskService = new TaskService(taskRepository, userRepository);
             usuarioLogado = null;
         }
 
@@ -419,7 +419,7 @@ namespace Application
                         break;
 
                     case 3:
-                        VerTarefasPorResponsavelEPorObjetivo();
+                        VerTarefasPorResponsavelOuPorObjetivo();
                         break;
 
                     case 4:
@@ -478,7 +478,7 @@ namespace Application
             tasks.ForEach(task => ImprimirTarefa(task));
         }
 
-        private static void VerTarefasPorResponsavelEPorObjetivo()
+        private static void VerTarefasPorResponsavelOuPorObjetivo()
         {
             Console.WriteLine("\t*Tarefas do usuário *");
             List<GetTaskResponse> tarefasDoUsuario = _taskService.GetAllTasksByEmail(usuarioLogado.Email);
