@@ -73,7 +73,7 @@ namespace Application.Services
             return MapTasksToRequest(tasks);
         }
 
-        public GetTaskResponse GetTaskByID(int id)
+        public GetTaskResponse? GetTaskByID(int id)
         {
             var task = _tasksRepository.GetTaskByID(id);
             return MapTaskToRequest(task);

@@ -7,7 +7,7 @@ namespace Application.Services
     {
         int CreateTask(TaskRequest taskRequest);
 
-        GetTaskResponse GetTaskByID(int id);
+        GetTaskResponse? GetTaskByID(int id);
 
         public List<GetTaskResponse> GetAllTasks();
 
