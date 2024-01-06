@@ -33,11 +33,12 @@ namespace Application.Services
 
         private List<TaskModel> MapTasksToModel(List<TaskRequest> tasks)
         {
-            if (tasks.Any())
-                return new List<TaskModel>();
+            if (tasks.Count == 0)
+                return [];
 
             return tasks.Select(task => new TaskModel()
             {
+                Id = task.Id,
                 EmailResponsable = task.EmailResponsable,
                 Objective = task.Objective,
                 Description = task.Description,
@@ -72,15 +73,15 @@ namespace Application.Services
 
         private List<GetUserResponse> MapUsersToRequest(List<UserModel> users)
         {
-            if (users.Any())
-                return new List<GetUserResponse>();
+            if (users.Count == 0)
+                return [];
 
             return users.Select(user => new GetUserResponse()
             {
                 Email = user.Email,
                 Name = user.Name,
                 Role = (Role)user.Role,
-                Password = new Password(user.Password),
+                Password = new Password(user.Password!),
                 Tasks = MapTasksToRequest(user.Tasks)
             }).ToList();
         }
@@ -101,8 +102,8 @@ namespace Application.Services
 
         private List<GetTaskResponse> MapTasksToRequest(List<TaskModel> tasks)
         {
-            if (tasks.Any())
-                return new List<GetTaskResponse>();
+            if (tasks.Count == 0)
+                return [];
 
             return tasks.Select(task => new GetTaskResponse()
             {
@@ -124,17 +125,17 @@ namespace Application.Services
         public GetUserResponse? GetUserByID(int id)
         {
             var user = _userRepository.GetUserByID(id);
-            return MapUserToRequest(user);
+            return MapUserToRequest(user!);
         }
         public GetUserResponse? GetUserByEmail(string email)
         {
             var user = _userRepository.GetUserByEmail(email);
-            return MapUserToRequest(user);
+            return MapUserToRequest(user!);
         }
         public GetUserResponse? GetUserByEmailAndPassword(string email, string password)
         {
             var user = _userRepository.GetUserByEmailAndPassword(email, password);
-            return MapUserToRequest(user);
+            return MapUserToRequest(user!);
         }
 
         public void UpdateUser(UpdateUserRequest updateUserRequest)

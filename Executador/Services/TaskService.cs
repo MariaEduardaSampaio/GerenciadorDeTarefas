@@ -84,10 +84,10 @@ namespace Application.Services
             return MapTaskToRequest(task);
         }
 
-        private GetTaskResponse MapTaskToRequest(TaskModel? task)
+        private GetTaskResponse? MapTaskToRequest(TaskModel? task)
         {
             if (task == null)
-                return new GetTaskResponse();
+                return null;
 
             return new GetTaskResponse()
             {
@@ -122,7 +122,7 @@ namespace Application.Services
                 taskModel.Objective = updateTaskRequest.Objective;
             if (updateTaskRequest.Description != null)
                 taskModel.Description = updateTaskRequest.Description;
-            if (updateTaskRequest.Status != null)
+            if (updateTaskRequest.Status != default)
                 taskModel.Status = (int)updateTaskRequest.Status;
         }
     }
