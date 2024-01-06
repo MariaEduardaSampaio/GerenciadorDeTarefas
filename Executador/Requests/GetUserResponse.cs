@@ -13,7 +13,7 @@ namespace Application.Requests
     {
         public string? Name { get; set; }
         public string? Email { get; set; }
-        public int AccessType { get; set; }
+        public SystemAccess AccessType { get; set; }
         public Role Role { get; set; }
         public Password Password { get; set; }
         public List<GetTaskResponse> Tasks { get; set; }
