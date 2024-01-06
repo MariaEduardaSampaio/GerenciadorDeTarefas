@@ -26,7 +26,7 @@ namespace Application
 
         static void Main()
         {
-  
+
             Console.Clear();
             Console.WriteLine("\t****** Gerenciador de Tarefas ******\n");
             MenuPrincipal();
@@ -42,8 +42,9 @@ namespace Application
                 do
                 {
                     Console.WriteLine("1. Fazer o login\n2. Fazer logout\n3. Criar um usuário\n4. Sair do programa");
+                    Console.Write("Opção: ");
                     conversaoValida = int.TryParse(Console.ReadLine(), out opcao);
-                } while (!conversaoValida || opcao < 1 || opcao > 4);
+                } while (!conversaoValida);
 
                 switch (opcao)
                 {
@@ -64,7 +65,7 @@ namespace Application
                         break;
 
                     default:
-                        Console.WriteLine("Entrada inválida!");
+                        Console.WriteLine("Entrada inválida! Tente novamente.\n");
                         break;
                 }
             } while (opcao != 4);
@@ -82,7 +83,7 @@ namespace Application
                 string email = Console.ReadLine()!;
 
                 Console.Write("Senha: ");
-                string senha = Console.ReadLine()!;
+                string senha = LerSenha();
 
                 GetUserResponse? userResponse = _userService.GetUserByEmailAndPassword(email, senha);
                 if (userResponse != null)
@@ -105,13 +106,39 @@ namespace Application
                     Console.WriteLine("Deseja tentar novamente (1) ou voltar ao menu inicial (2)?");
                     do
                     {
-                        opcao = PegarInteiroValido(); 
-                    } while (opcao != 1 && opcao != 2);
+                        Console.Write("Opção: ");
+                        opcao = PegarInteiroValido();
+                    } while (opcao < 1 || opcao > 2);
 
                     if (opcao == 2)
                         break;
                 }
             } while (opcao == 1);
+        }
+
+        private static string LerSenha()
+        {
+            string senha = "";
+            ConsoleKeyInfo key;
+
+            do
+            {
+                key = Console.ReadKey(true);
+
+                if (key.Key != ConsoleKey.Enter && key.Key != ConsoleKey.Backspace)
+                {
+                    senha += key.KeyChar;
+                    Console.Write("*");
+                }
+                else if (key.Key == ConsoleKey.Backspace && senha.Length > 0)
+                {
+                    senha = senha.Substring(0, senha.Length - 1);
+                    Console.Write("\b \b");
+                }
+            } while (key.Key != ConsoleKey.Enter);
+
+            Console.WriteLine();
+            return senha;
         }
 
         private static void FazerLogout()
@@ -172,6 +199,7 @@ namespace Application
                 Console.WriteLine($"\t*** Menu Tech Leader ***");
                 Console.WriteLine($"Bem vindo, {usuarioLogado!.Name}!");
                 ListarOpcoesTechLeader();
+                Console.Write("Opção: ");
                 opcao = PegarInteiroValido();
 
                 switch (opcao)
@@ -181,29 +209,42 @@ namespace Application
                         break;
 
                     case 2:
-                        VerEstatisticasTarefas();
+                        VerTarefasPorResponsavel();
                         break;
 
                     case 3:
-                        CriarTarefaPorTechLeader();
+                        VerTarefasPorResponsavelOuPorObjetivo();
                         break;
 
                     case 4:
-                        AssumirTarefa();
+                        VerTarefasPorObjetivo();
                         break;
 
                     case 5:
-                        MudarStatusDeTarefa();
+                        VerEstatisticasTarefas();
                         break;
 
                     case 6:
-                        MudarResponsavelPorTarefa();
+                        CriarTarefaPorTechLeader();
                         break;
 
                     case 7:
+                        AssumirTarefa();
+                        break;
+
+                    case 8:
+                        MudarStatusDeTarefa();
+                        break;
+
+                    case 9:
+                        MudarResponsavelPorTarefa();
+                        break;
+
+                    case 10:
                         MudarPrazoFinalDeTarefa();
                         break;
-                    case 8:
+
+                    case 11:
                         FazerLogout();
                         break;
 
@@ -213,25 +254,29 @@ namespace Application
                 }
                 Console.WriteLine($"\nPressione qualquer tecla para voltar para o menu...");
                 Console.ReadKey();
-            } while (opcao != 8);
+            } while (opcao != 11);
         }
 
         private static void ListarOpcoesTechLeader()
         {
             Console.WriteLine("\n1. Ver todas as tarefas do sistema.");
-            Console.WriteLine("2. Ver estatísticas de tarefas.");
-            Console.WriteLine("3. Criar tarefa.");
-            Console.WriteLine("4. Assumir uma tarefa.");
-            Console.WriteLine("5. Mudar status de tarefas.");
-            Console.WriteLine("6. Mudar responsável de tarefa.");
-            Console.WriteLine("7. Mudar prazo final de tarefa.");
-            Console.WriteLine("8. Fazer logout.\n");
+            Console.WriteLine("2. Ver suas tarefas.");
+            Console.WriteLine("3. Ver suas tarefas e tarefas relacionadas.");
+            Console.WriteLine("4. Ver tarefas por objetivo.");
+            Console.WriteLine("5. Ver estatísticas de tarefas.");
+            Console.WriteLine("6. Criar tarefa.");
+            Console.WriteLine("7. Assumir uma tarefa.");
+            Console.WriteLine("8. Mudar status de tarefa.");
+            Console.WriteLine("9. Mudar responsável de tarefa.");
+            Console.WriteLine("10. Mudar prazo final de tarefa.");
+            Console.WriteLine("11. Fazer logout.\n");
         }
 
         private static void VerTarefasDoSistema()
         {
+            Console.Clear();
             Console.WriteLine("\t* Tarefas do Sistema *");
-            _taskService.GetAllTasks().ForEach(task => ImprimirTarefa(task));
+            _taskService.GetAllTasks().ForEach(ImprimirTarefa).;
         }
 
         private static void VerEstatisticasTarefas()
@@ -256,6 +301,7 @@ namespace Application
         {
             try
             {
+                Console.Clear();
                 DateTime prazoFinal;
                 string email, objetivo, descricao;
 
@@ -282,8 +328,10 @@ namespace Application
                 };
 
                 _taskService.CreateTask(task);
+                Console.WriteLine("Tarefa criada com sucesso!\n");
 
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine($"Ocorreu um erro ao criar uma tarefa: {ex}");
             }
@@ -310,6 +358,8 @@ namespace Application
                 };
 
                 _taskService.UpdateTask(updateTaskRequest);
+
+                Console.WriteLine("Tarefa atualizada com sucesso!\n");
             }
             catch (Exception ex)
             {
@@ -332,8 +382,12 @@ namespace Application
                 ImprimirPossiveisStatusTarefa();
                 TaskStatusEnum status = PegarStatusTarefaValido();
 
+                if (status == TaskStatusEnum.Concluded)
+                    task.EndDate = DateTime.Now;
+
                 var updateTaskRequest = new UpdateTaskRequest()
                 {
+                    Id = task.Id,
                     EmailResponsable = task.EmailResponsable,
                     Status = status,
                     EndDate = task.EndDate,
@@ -342,6 +396,7 @@ namespace Application
                 };
 
                 _taskService.UpdateTask(updateTaskRequest);
+                Console.WriteLine($"Status da tarefa {task.Id} atualizado para {status} com sucesso!\n");
             }
             catch (Exception ex)
             {
@@ -357,14 +412,15 @@ namespace Application
                 Console.WriteLine("\t* Atualizar Responsável pela Tarefa *");
                 VerTarefasDoSistema();
 
-                Console.WriteLine("Qual o ID da tarefa que deseja atualizar o responsável?");
+                Console.Write("ID da tarefa: ");
                 GetTaskResponse task = PegarTaskValida();
 
-                Console.WriteLine("Qual o email do novo responsável pela tarefa?");
+                Console.Write("Email do novo responsável: ");
                 string email = PegarEmailValido();
 
                 var updateTaskRequest = new UpdateTaskRequest()
                 {
+                    Id = task.Id,
                     EmailResponsable = email,
                     Status = task.Status,
                     EndDate = task.EndDate,
@@ -373,6 +429,7 @@ namespace Application
                 };
 
                 _taskService.UpdateTask(updateTaskRequest);
+                Console.WriteLine($"Responsável da tarefa {task.Id} atualizado para {email} com sucesso!\n");
             }
             catch (Exception ex)
             {
@@ -384,17 +441,19 @@ namespace Application
         {
             try
             {
+                Console.Clear();
                 Console.WriteLine("\t* Atualizar prazo final de Tarefa *");
                 VerTarefasDoSistema();
 
-                Console.WriteLine("Qual o ID da tarefa que deseja atualizar o prazo final?");
+                Console.Write("ID da tarefa: ");
                 GetTaskResponse task = PegarTaskValida();
 
-                Console.WriteLine("Qual o novo prazo?");
+                Console.Write("Novo prazo: ");
                 DateTime prazoFinal = PegarDataValida();
 
                 var updateTaskRequest = new UpdateTaskRequest()
                 {
+                    Id = task.Id,
                     EmailResponsable = task.EmailResponsable,
                     Status = task.Status,
                     EndDate = prazoFinal,
@@ -403,6 +462,8 @@ namespace Application
                 };
 
                 _taskService.UpdateTask(updateTaskRequest);
+                Console.WriteLine($"Prazo final da tarefa {task.Id} atualizado para {prazoFinal} com sucesso!\n");
+
             }
             catch (Exception ex)
             {
@@ -420,6 +481,7 @@ namespace Application
                 Console.WriteLine($"\t*** Menu Desenvolvedor ***");
                 Console.WriteLine($"Bem vindo, {usuarioLogado!.Name}!");
                 ListarOpcoesDeveloper();
+                Console.Write("Opção: ");
                 opcao = PegarInteiroValido();
 
                 switch (opcao)
@@ -465,7 +527,7 @@ namespace Application
             {
                 string objetivo, descricao;
 
-                Console.WriteLine("\t*Criar Tarefa *");
+                Console.WriteLine("\t* Criar Tarefa *");
 
                 Console.Write("Objetivo: ");
                 objetivo = Console.ReadLine()!;
@@ -475,12 +537,13 @@ namespace Application
 
                 var task = new TaskRequest()
                 {
-                    EmailResponsable = usuarioLogado.Email,
+                    EmailResponsable = usuarioLogado!.Email,
                     Objective = objetivo,
                     Description = descricao
                 };
 
                 _taskService.CreateTask(task);
+                Console.WriteLine("Tarefa criada com sucesso!\n");
             }
             catch (Exception ex)
             {
@@ -491,25 +554,35 @@ namespace Application
         private static void VerTarefasPorResponsavel()
         {
             Console.WriteLine("\t*Tarefas do usuário *");
-            List<GetTaskResponse> tasks = _taskService.GetAllTasksByEmail(usuarioLogado.Email);
-            tasks.ForEach(task => ImprimirTarefa(task));
+            _taskService.GetAllTasksByEmail(usuarioLogado!.Email!).ForEach(ImprimirTarefa);
+        }
+
+        private static void VerTarefasPorObjetivo()
+        {
+            Console.WriteLine("\t*Tarefas por objetivo *");
+            Console.WriteLine("Qual o objetivo que deseja filtrar as tarefas?");
+            Console.Write("Objetivo: ");
+            string objetivo = Console.ReadLine()!;
+            _taskService.GetAllTasksByObjective(objetivo).ForEach(ImprimirTarefa);
         }
 
         private static void VerTarefasPorResponsavelOuPorObjetivo()
         {
             Console.WriteLine("\t*Tarefas do usuário *");
-            List<GetTaskResponse> tarefasDoUsuario = _taskService.GetAllTasksByEmail(usuarioLogado.Email);
+            List<GetTaskResponse> tarefasDoUsuario = _taskService.GetAllTasksByEmail(usuarioLogado!.Email!);
             List<GetTaskResponse> tarefasRelacionadas = new();
 
-            foreach(var tarefa in tarefasDoUsuario)
+            foreach (var tarefa in tarefasDoUsuario)
             {
                 tarefasRelacionadas.AddRange(_taskService.GetAllTasksByObjective(tarefa.Objective));
             }
 
             tarefasDoUsuario.AddRange(tarefasRelacionadas);
-            List<GetTaskResponse> tarefasPorResponsavelEObjetivo = tarefasDoUsuario.DistinctBy(tarefa => tarefa.Id).OrderBy(tarefa => tarefa.Id).ToList();
-            tarefasPorResponsavelEObjetivo.ForEach(ImprimirTarefa);
+            List<GetTaskResponse> tarefasPorResponsavelOuObjetivo = tarefasDoUsuario.DistinctBy(tarefa => tarefa.Id).OrderBy(tarefa => tarefa.Id).ToList();
+            tarefasPorResponsavelOuObjetivo.ForEach(ImprimirTarefa);
         }
+
+
 
         private static void ImprimirPossiveisStatusTarefa()
         {
@@ -519,19 +592,19 @@ namespace Application
 
         private static void ImprimirTarefa(GetTaskResponse task)
         {
-            Console.WriteLine($"\n--------------------------------------------------------------");
+            Console.WriteLine($"\n--------------------------------------------------------------------------------------");
             Console.WriteLine($"ID: {task.Id}");
-            Console.WriteLine($"--------------------------------------------------------------");
+            Console.WriteLine($"--------------------------------------------------------------------------------------");
             Console.WriteLine($"Objetivo: {task.Objective}");
-            Console.WriteLine($"--------------------------------------------------------------");
-            Console.WriteLine($"Status:{task.Status}");
-            Console.WriteLine($"--------------------------------------------------------------");
+            Console.WriteLine($"--------------------------------------------------------------------------------------");
+            Console.WriteLine($"Status: {task.Status}");
+            Console.WriteLine($"--------------------------------------------------------------------------------------");
             Console.WriteLine($"Data de criação: {task.CreatedDate}");
             Console.WriteLine($"Prazo final: {task.EndDate}");
             Console.WriteLine($"Responsável: {task.EmailResponsable}");
-            Console.WriteLine($"--------------------------------------------------------------");
+            Console.WriteLine($"--------------------------------------------------------------------------------------");
             Console.WriteLine($"Descrição: {task.Description}");
-            Console.WriteLine($"--------------------------------------------------------------\n\n");
+            Console.WriteLine($"--------------------------------------------------------------------------------------\n\n");
         }
 
         private static bool VerificarSeEmailExiste(string email)
@@ -568,20 +641,31 @@ namespace Application
         {
             DateTime data;
             bool conversaoValida;
-            do
+            conversaoValida = DateTime.TryParse(Console.ReadLine(), out data);
+            if (!conversaoValida)
             {
-                conversaoValida = DateTime.TryParse(Console.ReadLine(), out data);
-            } while (!conversaoValida);
+                do
+                {
+                    Console.WriteLine("Entre com uma data válida: ");
+                    conversaoValida = DateTime.TryParse(Console.ReadLine(), out data);
+                } while (!conversaoValida);
+            }
             return data;
         }
 
         private static string PegarEmailValido()
         {
             string email;
-            do
+            email = Console.ReadLine()!;
+
+            if (!VerificarSeEmailExiste(email))
             {
-                email = Console.ReadLine()!;
-            } while (!VerificarSeEmailExiste(email));
+                do
+                {
+                    Console.Write("Entre com um email válido: ");
+                    email = Console.ReadLine()!;
+                } while (!VerificarSeEmailExiste(email));
+            }
             return email;
         }
 
@@ -589,12 +673,18 @@ namespace Application
         {
             GetTaskResponse? task;
             int id;
+            id = PegarInteiroValido();
+            task = _taskService.GetTaskByID(id);
 
-            do
+            if (task == null)
             {
-                id = PegarInteiroValido();
-                task = _taskService.GetTaskByID(id);
-            } while (task == null);
+                do
+                {
+                    Console.Write($"Não existe tarefa com ID {id}. Tente novamente: ");
+                    id = PegarInteiroValido();
+                    task = _taskService.GetTaskByID(id);
+                } while (task == null);
+            }
             return task;
         }
     }
