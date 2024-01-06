@@ -14,7 +14,6 @@ namespace Infrastructure.EntityFramework.Configuration
             builder.Property(User => User.Email).IsRequired().HasMaxLength(50);
             builder.Property(User => User.Password).IsRequired().HasMaxLength(50);
             builder.Property(User => User.Role).IsRequired();
-            builder.Property(User => User.AccessType);
             builder.HasMany(user => user.Tasks).WithOne(task => task.User).HasForeignKey(task => task.UserID);
         }
     }

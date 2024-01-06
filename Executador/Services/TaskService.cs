@@ -19,7 +19,7 @@ namespace Application.Services
 
         public int CreateTask(TaskRequest taskRequest)
         {
-            var user = _userRepository.GetUserByEmail(taskRequest.EmailResponsable!);
+            var user = _userRepository.GetUserByEmail(taskRequest.EmailResponsable);
             var task = new TaskModel()
             {
                 EmailResponsable = taskRequest.EmailResponsable,
@@ -28,7 +28,7 @@ namespace Application.Services
                 Description = taskRequest.Description,
                 CreatedDate = DateTime.Now,
                 Status = (int)TaskStatusEnum.UnderAnalysis,
-                UserID = user!.Id
+                UserID = user.Id
             };
 
             _tasksRepository.CreateTask(task);
@@ -51,14 +51,13 @@ namespace Application.Services
         }
         private List<GetTaskResponse> MapTasksToRequest(List<TaskModel> tasks)
         {
-            if (tasks.Count == 0)
-                return [];
+            if (tasks.Any())
+                return new List<GetTaskResponse>();
 
             return tasks.Select(task => new GetTaskResponse()
             {
-                Id = task.Id,
                 EmailResponsable = task.EmailResponsable,
-                CreatedDate = task.CreatedDate,
+                CreatedDate = DateTime.Now,
                 EndDate = task.EndDate,
                 Objective = task.Objective,
                 Description = task.Description,
@@ -74,7 +73,7 @@ namespace Application.Services
 
         public List<GetTaskResponse> GetAllTasksByObjective(string objective)
         {
-            var tasks = _tasksRepository.GetAllTasksByObjective(objective);
+            var tasks = _tasksRepository.GetAllTasksByEmail(objective);
             return MapTasksToRequest(tasks);
         }
 
@@ -91,7 +90,6 @@ namespace Application.Services
 
             return new GetTaskResponse()
             {
-                Id = task.Id,
                 EmailResponsable = task.EmailResponsable,
                 CreatedDate = DateTime.Now,
                 EndDate = task.EndDate,
@@ -124,6 +122,8 @@ namespace Application.Services
                 taskModel.Description = updateTaskRequest.Description;
             if (updateTaskRequest.Status != null)
                 taskModel.Status = (int)updateTaskRequest.Status;
+            if (updateTaskRequest.UserID != null)
+                taskModel.UserID = updateTaskRequest.UserID;
         }
     }
 }
