@@ -26,12 +26,10 @@ namespace Application
 
         static void Main()
         {
-            do
-            {
-                Console.Clear();
-                Console.WriteLine("\t****** Gerenciador de Tarefas ******\n");
-                MenuPrincipal();
-            } while (true);
+  
+            Console.Clear();
+            Console.WriteLine("\t****** Gerenciador de Tarefas ******\n");
+            MenuPrincipal();
         }
 
         private static void MenuPrincipal()
@@ -41,28 +39,35 @@ namespace Application
 
             do
             {
-                Console.WriteLine("Deseja fazer o login (1), logout (2) ou criar um usuário (3)?");
-                conversaoValida = int.TryParse(Console.ReadLine(), out opcao);
-            } while (!conversaoValida || opcao < 1 || opcao > 3);
+                do
+                {
+                    Console.WriteLine("1. Fazer o login\n2. Fazer logout\n3. Criar um usuário\n4. Sair do programa");
+                    conversaoValida = int.TryParse(Console.ReadLine(), out opcao);
+                } while (!conversaoValida || opcao < 1 || opcao > 4);
 
-            switch (opcao)
-            {
-                case 1:
-                    FazerLogin();
-                    break;
+                switch (opcao)
+                {
+                    case 1:
+                        FazerLogin();
+                        break;
 
-                case 2:
-                    FazerLogout();
-                    break;
+                    case 2:
+                        FazerLogout();
+                        break;
 
-                case 3:
-                    CriarUsuario();
-                    break;
+                    case 3:
+                        CriarUsuario();
+                        break;
 
-                default:
-                    Console.WriteLine("Entrada inválida!");
-                    break;
-            }
+                    case 4:
+                        Console.WriteLine("Saindo do gerenciador de tarefas...");
+                        break;
+
+                    default:
+                        Console.WriteLine("Entrada inválida!");
+                        break;
+                }
+            } while (opcao != 4);
         }
 
         private static void FazerLogin()
@@ -84,6 +89,10 @@ namespace Application
                 {
                     usuarioLogado = userResponse;
                     Console.WriteLine("Usuário logado com sucesso!");
+
+                    Console.WriteLine($"\nPressione qualquer tecla para prosseguir para o Menu do {usuarioLogado.Role}...");
+                    Console.ReadKey();
+
                     if (usuarioLogado.Role == Role.TechLeader)
                         MenuTechLeader();
                     else
@@ -93,11 +102,13 @@ namespace Application
                 else
                 {
                     Console.WriteLine("Email ou senha incorretos.");
-                    Console.WriteLine("Deseja tentar novamente ou voltar ao menu inicial?\n" +
-                        "Digite 1 para tentar novamente e qualquer outra para voltar ao menu.");
-                    opcao = PegarInteiroValido();
+                    Console.WriteLine("Deseja tentar novamente (1) ou voltar ao menu inicial (2)?");
+                    do
+                    {
+                        opcao = PegarInteiroValido(); 
+                    } while (opcao != 1 && opcao != 2);
 
-                    if (opcao != 1)
+                    if (opcao == 2)
                         break;
                 }
             } while (opcao == 1);
@@ -106,14 +117,13 @@ namespace Application
         private static void FazerLogout()
         {
             if (usuarioLogado == null)
-                Console.WriteLine("Não há usuário logado para deslogar.");
+                Console.WriteLine("Não há usuário logado para deslogar.\n");
             else
             {
                 Console.Clear();
                 usuarioLogado = null;
-                Console.WriteLine("Usuário deslogado com sucesso!");
+                Console.WriteLine("Usuário deslogado com sucesso!\n");
             }
-            MenuPrincipal();
         }
 
         private static void CriarUsuario()
@@ -148,6 +158,7 @@ namespace Application
             _userService.CreateUser(usuario);
 
             Console.WriteLine("Usuário criado com sucesso!");
+            Console.ReadLine();
             MenuPrincipal();
         }
 
@@ -159,7 +170,7 @@ namespace Application
             {
                 Console.Clear();
                 Console.WriteLine($"\t*** Menu Tech Leader ***");
-                Console.WriteLine($"Bem vindo, {usuarioLogado.Name}!");
+                Console.WriteLine($"Bem vindo, {usuarioLogado!.Name}!");
                 ListarOpcoesTechLeader();
                 opcao = PegarInteiroValido();
 
@@ -200,8 +211,9 @@ namespace Application
                         ListarOpcoesTechLeader();
                         break;
                 }
-
-            } while (opcao != 7);
+                Console.WriteLine($"\nPressione qualquer tecla para voltar para o menu...");
+                Console.ReadKey();
+            } while (opcao != 8);
         }
 
         private static void ListarOpcoesTechLeader()
@@ -289,7 +301,8 @@ namespace Application
 
                 var updateTaskRequest = new UpdateTaskRequest()
                 {
-                    EmailResponsable = usuarioLogado.Email,
+                    Id = task.Id,
+                    EmailResponsable = usuarioLogado!.Email,
                     Status = task.Status,
                     EndDate = task.EndDate,
                     Objective = task.Objective,
@@ -340,6 +353,7 @@ namespace Application
         {
             try
             {
+                Console.Clear();
                 Console.WriteLine("\t* Atualizar Responsável pela Tarefa *");
                 VerTarefasDoSistema();
 
@@ -404,7 +418,7 @@ namespace Application
             {
                 Console.Clear();
                 Console.WriteLine($"\t*** Menu Desenvolvedor ***");
-                Console.WriteLine($"Bem vindo, {usuarioLogado.Name}!");
+                Console.WriteLine($"Bem vindo, {usuarioLogado!.Name}!");
                 ListarOpcoesDeveloper();
                 opcao = PegarInteiroValido();
 
@@ -430,6 +444,9 @@ namespace Application
                         ListarOpcoesDeveloper();
                         break;
                 }
+
+                Console.WriteLine($"\nPressione qualquer tecla para voltar para o menu...\n");
+                Console.ReadKey();
 
             } while (opcao != 4);
         }
@@ -490,7 +507,7 @@ namespace Application
             }
 
             tarefasDoUsuario.AddRange(tarefasRelacionadas);
-            List<GetTaskResponse> tarefasPorResponsavelEObjetivo = tarefasDoUsuario.Distinct().ToList();
+            List<GetTaskResponse> tarefasPorResponsavelEObjetivo = tarefasDoUsuario.DistinctBy(tarefa => tarefa.Id).OrderBy(tarefa => tarefa.Id).ToList();
             tarefasPorResponsavelEObjetivo.ForEach(ImprimirTarefa);
         }
 
@@ -502,17 +519,19 @@ namespace Application
 
         private static void ImprimirTarefa(GetTaskResponse task)
         {
+            Console.WriteLine($"\n--------------------------------------------------------------");
             Console.WriteLine($"ID: {task.Id}");
-            Console.WriteLine($"***************************************");
+            Console.WriteLine($"--------------------------------------------------------------");
             Console.WriteLine($"Objetivo: {task.Objective}");
-            Console.WriteLine($"***************************************");
+            Console.WriteLine($"--------------------------------------------------------------");
             Console.WriteLine($"Status:{task.Status}");
-            Console.WriteLine($"***************************************");
+            Console.WriteLine($"--------------------------------------------------------------");
             Console.WriteLine($"Data de criação: {task.CreatedDate}");
-            Console.WriteLine($"Prazo final:{task.EndDate}");
+            Console.WriteLine($"Prazo final: {task.EndDate}");
             Console.WriteLine($"Responsável: {task.EmailResponsable}");
-            Console.WriteLine($"***************************************");
-            Console.WriteLine($"Descrição: {task.Description}\n");
+            Console.WriteLine($"--------------------------------------------------------------");
+            Console.WriteLine($"Descrição: {task.Description}");
+            Console.WriteLine($"--------------------------------------------------------------\n\n");
         }
 
         private static bool VerificarSeEmailExiste(string email)

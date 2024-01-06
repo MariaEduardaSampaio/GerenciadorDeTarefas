@@ -84,17 +84,17 @@ namespace Application.Services
                 Tasks = MapTasksToRequest(user.Tasks)
             }).ToList();
         }
-        private GetUserResponse MapUserToRequest(UserModel user)
+        private GetUserResponse? MapUserToRequest(UserModel user)
         {
             if (user == null)
-                return new GetUserResponse();
+                return null;
 
             return new GetUserResponse()
             {
                 Email = user.Email,
                 Name = user.Name,
                 Role = (Role)user.Role,
-                Password = new Password(user.Password),
+                Password = new Password(user.Password!),
                 Tasks = MapTasksToRequest(user.Tasks)
             };
         }
