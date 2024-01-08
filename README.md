@@ -20,17 +20,6 @@ O Gerenciador de Tarefas é um sistema que permite a gestão eficiente de tarefa
 - **Adição de Desenvolvedores:** Pode ser feita por meio de um arquivo TXT ou JSON atualizado pelo Tech Leader ou manualmente.
 - **Controle de Acesso:** Todos precisam de uma chave de acesso para entrar no sistema.
 
-## Como Contribuir e Utilizar 🤝
-
-Contribuições são bem-vindas! Se encontrar problemas ou tiver sugestões de melhorias, sinta-se à vontade para abrir uma issue ou enviar um pull request.
-
-Para utilizar o sistema, siga os passos abaixo:
-1. **Clone o Repositório:** Baixe ou clone o repositório do Gerenciador de Tarefas em seu ambiente local.
-    ```bash
-    git clone https://github.com/MariaEduardaSampaio/GerenciadorDeTarefas.git
-    ```
-2. **Configuração Inicial:** Realize as configurações iniciais e de acesso conforme orientações do Tech Leader.
-
 ## Autora 👩‍💻
 
 Este projeto foi desenvolvido por [Maria Eduarda Sampaio](https://github.com/MariaEduardaSampaio).
